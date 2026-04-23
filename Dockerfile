@@ -7,9 +7,7 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY spam_model.pkl .
-COPY tfidf_vectorizer.pkl .
-COPY app.py .
+COPY . .
 
 EXPOSE 5000
 
