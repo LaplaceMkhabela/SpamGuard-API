@@ -1,6 +1,8 @@
 import re
+import os
+import json
 import joblib
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,render_template
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -24,6 +26,14 @@ def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
     return text
+
+# Simple Profanity Filter
+def check_profanity(text):
+    with open(os.path.join("data"),"bad_words.json") as file:
+        data = json.loads(file.read)
+        profane_words = data['words']
+        tokens = set(text.lower().split())
+        return not tokens.isdisjoint(profane_words)
 
 @app.route('/predict', methods=['POST'])
 @limiter.limit("5 per minute")
@@ -50,7 +60,7 @@ def predict():
 
 @app.route('/', methods=['GET'])
 def home():
-    return jsonify({'message': 'Spam Detection API is running. Use POST /predict'})
+    return render_template('index.html')
 
 # Custom error handler for when the limit is reached
 @app.errorhandler(429)
