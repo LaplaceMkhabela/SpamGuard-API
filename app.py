@@ -17,7 +17,6 @@ limiter = Limiter(
     key_func=get_remote_address,
     app=app,
     default_limits=["200 per day", "50 per hour"],
-    # 'redis_db' matches the service name in docker-compose.yml
     storage_uri="redis://redis_db:6379",
     strategy="fixed-window" 
 )
@@ -34,9 +33,26 @@ def check_profanity(text):
         profane_words = data['words']
         tokens = set(text.lower().split())
         return not tokens.isdisjoint(profane_words)
+    
+# Phishing Heuristic
+def estimate_phishing(text):
+    text = text.lower()
+    with open(os.path.join("data"),"phishing_data.json") as file:
+        data = json.loads(file.read)
+        keywords = data['words']
+        
+        patterns = [r'http[s]?://', r'bit\.ly', r'click here', r'urgent']
+    
+        score = 0
+        for word in keywords:
+            if word in text: score += 0.15
+        for pattern in patterns:
+            if re.search(pattern, text): score += 0.25
+            
+        return min(score, 1.0) 
 
 @app.route('/predict', methods=['POST'])
-@limiter.limit("5 per minute")
+@limiter.limit("10 per minute")
 def predict():
     """
     Expects JSON: {"message": "Your text here"}
