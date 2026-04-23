@@ -54,24 +54,28 @@ def estimate_phishing(text):
 @app.route('/predict', methods=['POST'])
 @limiter.limit("10 per minute")
 def predict():
-    """
-    Expects JSON: {"message": "Your text here"}
-    Returns: {"prediction": "SPAM" or "HAM", "spam_probability": 0.98}
-    """
     data = request.get_json()
     if not data or 'message' not in data:
         return jsonify({'error': 'Missing "message" field'}), 400
 
     raw_message = data['message']
     cleaned = clean_text(raw_message)
-    vec = vectorizer.transform([cleaned])
     
-    prob_spam = model.predict_proba(vec)[0][1] 
+    # ML Inference for Spam
+    vec = vectorizer.transform([cleaned])
+    prob_spam = model.predict_proba(vec)[0][1]
     prediction = "SPAM" if prob_spam >= 0.5 else "HAM"
+
+    # Heuristic Checks
+    phishing_prob = estimate_phishing(raw_message)
+    profanity_found = check_profanity(raw_message)
     
     return jsonify({
         'prediction': prediction,
-        'spam_probability': round(prob_spam, 4)
+        'spam_probability': round(prob_spam, 4),
+        'phishing_probability': round(phishing_prob, 4),
+        'profanity_detected': profanity_found,
+        'language': 'en-US'
     })
 
 @app.route('/', methods=['GET'])
