@@ -82,6 +82,10 @@ def predict():
 def home():
     return render_template('index.html')
 
+@app.route('/pricing', methods=['GET'])
+def pricing():
+    return render_template('pricing.html')
+
 # Custom error handler for when the limit is reached
 @app.errorhandler(429)
 def ratelimit_handler(e):
