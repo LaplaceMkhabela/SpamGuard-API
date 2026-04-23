@@ -3,3 +3,4 @@ flask-limiter[redis]
 joblib
 scikit-learn
 redis
+gunicorn==21.2.0
