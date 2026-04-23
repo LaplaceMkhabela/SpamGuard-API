@@ -1,6 +1,8 @@
 import re
 import joblib
 from flask import Flask, request, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 # Load model and vectorizer
 model = joblib.load('spam_model.pkl')
@@ -8,12 +10,23 @@ vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
 app = Flask(__name__)
 
+# --- Limiter Setup ---
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    # 'redis_db' matches the service name in docker-compose.yml
+    storage_uri="redis://redis_db:6379",
+    strategy="fixed-window" 
+)
+
 def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
     return text
 
 @app.route('/predict', methods=['POST'])
+@limiter.limit("5 per minute")
 def predict():
     """
     Expects JSON: {"message": "Your text here"}
@@ -27,7 +40,7 @@ def predict():
     cleaned = clean_text(raw_message)
     vec = vectorizer.transform([cleaned])
     
-    prob_spam = model.predict_proba(vec)[0][1]   # probability of spam
+    prob_spam = model.predict_proba(vec)[0][1] 
     prediction = "SPAM" if prob_spam >= 0.5 else "HAM"
     
     return jsonify({
@@ -37,7 +50,15 @@ def predict():
 
 @app.route('/', methods=['GET'])
 def home():
-    return jsonify({'message': 'Spam Detection API is running. Use POST /predict with {"message": "..."}'})
+    return jsonify({'message': 'Spam Detection API is running. Use POST /predict'})
+
+# Custom error handler for when the limit is reached
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({
+        "error": "Rate limit exceeded",
+        "message": str(e.description)
+    }), 429
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
