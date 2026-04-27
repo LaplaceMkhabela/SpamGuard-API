@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SpamGuard API - Developer-First Spam Detection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#0b1c30",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dae2fd",
+                        "inverse-primary": "#bec6e0",
+                        "primary-container": "#131b2e",
+                        "on-secondary-fixed": "#001a42",
+                        "inverse-surface": "#213145",
+                        "surface": "#f8f9ff",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-high": "#dce9ff",
+                        "background": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "on-secondary-container": "#fefcff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-dim": "#cbdbf5",
+                        "surface-container-low": "#eff4ff",
+                        "on-tertiary-fixed": "#001e2f",
+                        "outline": "#76777d",
+                        "on-surface": "#0b1c30",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-primary-container": "#7c839b",
+                        "primary-fixed-dim": "#bec6e0",
+                        "tertiary-fixed": "#c9e6ff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#000000",
+                        "tertiary-container": "#001e2f",
+                        "surface-tint": "#565e74",
+                        "on-surface-variant": "#45464d",
+                        "surface-container": "#e5eeff",
+                        "secondary-container": "#2170e4",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#0058be",
+                        "primary": "#000000",
+                        "on-tertiary-container": "#008cc7",
+                        "surface-variant": "#d3e4fe",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "surface-container-highest": "#d3e4fe",
+                        "inverse-on-surface": "#eaf1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "container-max": "1280px",
+                        "gutter": "20px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "xl": "40px"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["monospace"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h3": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "h2": ["Space Grotesk"],
+                        "h1": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "450" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h3": ["24px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "h2": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "h1": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen pt-16">
+    <!-- TopNavBar -->
+    <nav
+        class="bg-surface-container-lowest/80 backdrop-blur-md text-on-background font-h3 text-code-sm font-medium tracking-tight fixed top-0 w-full z-50 border-b border-outline-variant">
+        <div class="flex justify-between items-center h-16 px-6 lg:px-12 max-w-container-max mx-auto">
+            <div class="text-xl font-bold tracking-tighter text-on-background flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary" data-weight="fill">shield</span>
+                SpamGuard API
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a class="text-secondary font-semibold border-b-2 border-secondary pb-1" href="#">Home</a>
+                <a class="text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container dark:hover:bg-surface-container-high transition-all duration-200 px-2 py-1 rounded"
+                    href="#">
+Support & Sustainability</a>
+                <a class="text-on-surface-variant hover:text-on-surface transition-colors hover:bg-surface-container dark:hover:bg-surface-container-high transition-all duration-200 px-2 py-1 rounded"
+                    href="#">API Reference</a>
+            </div>
+            <div class="flex items-center gap-4">
+            </div>
+        </div>
+    </nav>
+    <main class="max-w-container-max mx-auto px-6 lg:px-12 py-xl">
+        <!-- Hero Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-xl items-start">
+            <div class="lg:col-span-7 flex flex-col gap-md">
+                <h1 class="font-h1 text-h1 text-on-background">Detect Spam with <br />Architectural Precision</h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Integrate our high-performance API to instantly analyze text, filter noise, and protect your
+                    platform with sub-30ms latency.
+                </p>
+                <!-- Interactive Playground -->
+                <div
+                    class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md mt-sm shadow-[0_4px_12px_rgba(15,23,42,0.08)]">
+                    <div class="flex justify-between items-center mb-sm">
+                        <label class="font-label-caps text-label-caps text-on-surface-variant">PASTE TEXT TO CHECK FOR
+                            SPAM</label>
+                        <span
+                            class="bg-surface-container text-on-surface-variant px-2 py-1 rounded-sm font-code-sm text-code-sm text-xs">POST
+                            /predict</span>
+                    </div>
+                    <textarea id="messageInput"
+                        class="w-full bg-background border border-outline-variant rounded-lg p-md font-code-sm text-code-sm text-on-background focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary min-h-[200px] resize-y"
+                        placeholder="{'text': 'Enter suspicious content here...'}"></textarea>
+                    <div class="flex justify-end mt-sm">
+                        <button id="analyzeBtn"
+                            class="bg-primary-container text-on-primary hover:brightness-90 transition-all duration-200 px-6 py-2 rounded-lg font-h3 text-body-md flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">play_arrow</span>
+                            Analyze Content
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Analysis Results Sidebar -->
+            <div class="lg:col-span-5 flex flex-col gap-md lg:mt-xl">
+                <div
+                    class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-[0_4px_12px_rgba(15,23,42,0.08)]">
+                    <h3 class="font-h3 text-h3 text-on-background mb-lg">Confidence Score</h3>
+                    <!-- Dynamic Slider Widget Simulation -->
+                    <div class="mb-xl">
+                        <div class="flex justify-between font-label-caps text-label-caps mb-xs">
+                            <span id="resultLabel" class="text-[#16a34a]">Safe</span>
+                            <span class="text-on-surface-variant font-code-sm">0.82</span>
+                            <span class="text-error">Spam</span>
+                        </div>
+                        <div class="relative w-full h-[4px] bg-outline-variant rounded-full mt-sm">
+                            <div id="resultBar" class="absolute top-0 left-0 h-full bg-secondary rounded-full"
+                                style="width: 82%;">
+                            </div>
+                            <div id="resultBarKnob"
+                                class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-surface-container-lowest border border-primary-container rounded-full shadow-sm"
+                                style="left: 82%;"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-sm">
+                        <div class="flex justify-between items-center py-2 border-b border-surface-container">
+                            <span class="font-code-sm text-code-sm text-on-surface-variant">Phishing Probability</span>
+                            <span class="font-code-sm text-code-sm text-on-background">12%</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-surface-container">
+                            <span class="font-code-sm text-code-sm text-on-surface-variant">Profanity Detected</span>
+                            <span class="font-code-sm text-code-sm text-on-background">False</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="font-code-sm text-code-sm text-on-surface-variant">Language</span>
+                            <span class="font-code-sm text-code-sm text-on-background">en-US</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- API Performance Section -->
+        <section class="mt-xl pt-xl border-t border-outline-variant">
+            <h2 class="font-h2 text-h2 text-on-background mb-lg">API Performance</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                <!-- Card 1 -->
+                <div
+                    class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg flex flex-col gap-sm relative overflow-hidden group hover:border-secondary transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="font-label-caps text-label-caps text-on-surface-variant">SYSTEM STATUS</span>
+                        <span
+                            class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">dns</span>
+                    </div>
+                    <div class="flex items-center gap-sm mt-md">
+                        <div class="w-3 h-3 rounded-full bg-[#16a34a] animate-pulse"></div>
+                        <span class="font-h3 text-h3 text-on-background">All Systems Active</span>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg flex flex-col gap-sm relative overflow-hidden group hover:border-secondary transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="font-label-caps text-label-caps text-on-surface-variant">API CALLS</span>
+                        <span
+                            class="text-xs font-code-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded">30d</span>
+                    </div>
+                    <div class="mt-md flex items-baseline gap-2">
+                        <span class="font-h3 text-h3 text-on-background text-4xl">1.8K</span>
+                        <span class="font-code-sm text-code-sm text-on-surface-variant">requests</span>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg flex flex-col gap-sm relative overflow-hidden group hover:border-secondary transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="font-label-caps text-label-caps text-on-surface-variant">GLOBAL LATENCY</span>
+                        <span
+                            class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">speed</span>
+                    </div>
+                    <div class="mt-md flex items-baseline gap-2">
+                        <span class="font-h3 text-h3 text-on-background text-4xl">28</span>
+                        <span class="font-code-sm text-code-sm text-on-surface-variant">ms avg</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Support Section -->
+        <section class="mt-xl pt-xl border-t border-outline-variant">
+            <div
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg md:p-xl shadow-[0_4px_12px_rgba(15,23,42,0.08)] flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="flex flex-col gap-sm max-w-2xl">
+                    <h2 class="font-h2 text-h2 text-on-background flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary"
+                            data-weight="fill">volunteer_activism</span>
+                        Support Our Mission
+                    </h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                        Your contributions help us maintain the free tier for indie developers and support our continued
+                        open-source initiatives. Every donation ensures SpamGuard remains accessible to everyone.
+                    </p>
+                </div>
+                <div class="flex flex-col items-center gap-4 w-full md:w-auto">
+                    <button
+                        class="w-full md:w-auto bg-secondary text-on-secondary hover:brightness-110 transition-all duration-200 px-8 py-3 rounded-lg font-h3 text-body-lg font-medium shadow-sm flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">favorite</span>
+                        Sponsor on GitHub
+                    </button>
+                    <div class="flex items-center gap-4 text-on-surface-variant">
+                        <a class="font-h3 text-xs hover:text-on-background transition-colors flex items-center gap-1 border border-outline-variant rounded-full px-3 py-1 bg-surface"
+                            href="https://ko-fi.com/W7W41YCD15">
+                            <span class="material-symbols-outlined text-[16px]">local_cafe</span> Buy us a coffee
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-surface dark:bg-surface w-full py-12 px-6 lg:px-12 border-t border-outline-variant mt-xl">
+        <div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="font-h3 text-body-md font-bold text-on-background">
+                SpamGuard API
+            </div>
+            <div class="flex flex-wrap gap-4 justify-center">
+            </div>
+            <div class="font-h3 text-xs font-normal text-on-surface-variant">
+                © 2026 SpamGuard. Built for developers by developers.
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('analyzeBtn').addEventListener('click', async () => {
+            const message = document.getElementById('messageInput').value;
+            const btn = document.getElementById('analyzeBtn');
+
+            btn.disabled = true;
+            btn.innerText = 'Processing...';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+
+                if (data.prediction) {
+                    // 1. Update Spam Probability Slider
+                    const spamPct = (data.spam_probability * 100).toFixed(0);
+                    document.querySelector('.absolute.bg-secondary').style.width = spamPct + '%';
+
+                    // 2. Update Phishing Probability Row
+                    // Select the second column of the phishing row
+                    const phishingRow = document.querySelectorAll('.flex.justify-between.items-center.py-2')[0];
+                    phishingRow.querySelector('.text-on-background').innerText = (data.phishing_probability * 100).toFixed(0) + '%';
+
+                    // 3. Update Profanity Row
+                    const profanityRow = document.querySelectorAll('.flex.justify-between.items-center.py-2')[1];
+                    profanityRow.querySelector('.text-on-background').innerText = data.profanity_detected ? 'True' : 'False';
+
+                    // Optional: Change text color if profanity is detected
+                    profanityRow.querySelector('.text-on-background').style.color = data.profanity_detected ? '#ba1a1a' : '#0b1c30';
+                }
+
+                if (response.status === 429) {
+                    alert("Rate limit exceeded! Please wait a moment.");
+                } else if (data.prediction) {
+                    // Update UI with results
+                    const prob = (data.spam_probability * 100).toFixed(0);
+                    document.querySelector('.font-code-sm.text-on-surface-variant').innerText = data.spam_probability;
+                    document.querySelector('.absolute.bg-secondary').style.width = prob + '%';
+                    document.querySelector('.absolute.bg-surface-container-lowest').style.left = prob + '%';
+                    alert(`Result: ${data.prediction} (${prob}%)`);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Analyze Content';
+            }
+        });
+    </script>
+</body>
+
+</html>
