@@ -1,3 +1,16 @@
 {
-    "words":["login", "verify", "account", "password", "banking", "update", "secure", "suspend"]
+    "words":[
+    "login", "verify", "account", "password", "banking", "update", "secure", "suspend",
+    "verification", "verified", "verifies", "logging", "logged", "log in", "sign in",
+    "accounts", "passcode", "bank", "banking alert", "updating", "updated", "security",
+    "suspended", "suspension",
+    "confirm", "confirmation", "validate", "authenticate", "unlock", "restore",
+    "reactivate", "review", "alert", "warning", "notification", "unusual activity",
+    "suspicious", "compromised", "breach", "limited", "restricted", "locked", "disable",
+    "immediate", "urgent", "action required", "mandatory update", "failure to comply",
+    "terminate", "fraud", "unauthorized transaction",
+    "credentials", "2fa", "multi-factor", "reset password", "recovery", "security code",
+    "otp", "credit card", "debit card", "cvv", "paypal", "wire transfer", "invoice",
+    "lottery", "prize", "gift card", "irs", "tax refund"
+]
 }
