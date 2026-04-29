@@ -26,10 +26,10 @@ def clean_text(text):
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
     return text
 
-# Simple Profanity Filter
+# Profanity Filter
 def check_profanity(text):
-    with open(os.path.join("data"),"bad_words.json") as file:
-        data = json.loads(file.read)
+    with open(os.path.join("data", "bad_words.json"), "r") as file:
+        data = json.load(file)
         profane_words = data['words']
         tokens = set(text.lower().split())
         return not tokens.isdisjoint(profane_words)
@@ -37,8 +37,8 @@ def check_profanity(text):
 # Phishing Heuristic
 def estimate_phishing(text):
     text = text.lower()
-    with open(os.path.join("data"),"phishing_data.json") as file:
-        data = json.loads(file.read)
+    with open(os.path.join("data", "phishing_data.json"), "r") as file:
+        data = json.load(file)
         keywords = data['words']
         
         patterns = [r'http[s]?://', r'bit\.ly', r'click here', r'urgent']
@@ -49,7 +49,7 @@ def estimate_phishing(text):
         for pattern in patterns:
             if re.search(pattern, text): score += 0.25
             
-        return min(score, 1.0) 
+        return min(score, 1.0)
 
 @app.route('/predict', methods=['POST'])
 @limiter.limit("10 per minute")
