@@ -593,35 +593,68 @@
 
         async function runAnalysis() {
             const rawText = messageInput.value.trim();
-            if (!rawText) { alert("Please enter some text to analyze."); return; }
+            if (!rawText) {
+                alert("Please enter some text to analyze.");
+                return;
+            }
+
             analyzeBtn.disabled = true;
             analyzeBtn.innerHTML = '<span class="material-symbols-outlined text-sm">progress_activity</span> Analyzing...';
 
-            let obj_promise = fetch('/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: rawText
-                })
-            })
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: rawText })
+                });
 
-            const result = await obj_promise.json();
-            const spamProb = result.spam_probability;
-            const widthPercent = (spamProb * 100);
-            resultBar.style.width = `${widthPercent}%`;
-            resultKnob.style.left = `${widthPercent}%`;
-            spamProbSpan.innerText = `${(spamProb * 100).toFixed(0)}%`;
-            phishingSpan.innerText = `${(result.phishing_probability * 100).toFixed(0)}%`;
-            profanitySpan.innerText = result.profanity_detected ? 'True' : 'False';
-            profanitySpan.style.color = result.profanity_detected ? '#ba1a1a' : '#0b1c30';
-            langSpan.innerText = result.language;
-            if (spamProb > 0.65) { resultLabelSpan.innerText = 'Spam'; resultLabelSpan.className = 'text-error font-bold'; }
-            else if (spamProb > 0.3) { resultLabelSpan.innerText = 'Suspicious'; resultLabelSpan.className = 'text-amber-600 font-bold'; }
-            else { resultLabelSpan.innerText = 'Safe'; resultLabelSpan.className = 'text-[#16a34a] font-bold'; }
-            analyzeBtn.disabled = false;
-            analyzeBtn.innerHTML = '<span class="material-symbols-outlined text-sm">play_arrow</span> Analyze Content';
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Validate expected properties exist
+                if (result.spam_probability === undefined || result.phishing_probability === undefined) {
+                    throw new Error('Invalid response format from server');
+                }
+
+                const spamProb = result.spam_probability;
+                const widthPercent = spamProb * 100;
+                resultBar.style.width = `${widthPercent}%`;
+                resultKnob.style.left = `${widthPercent}%`;
+                spamProbSpan.innerText = `${widthPercent.toFixed(0)}%`;
+                phishingSpan.innerText = `${(result.phishing_probability * 100).toFixed(0)}%`;
+                profanitySpan.innerText = result.profanity_detected ? 'True' : 'False';
+                profanitySpan.style.color = result.profanity_detected ? '#ba1a1a' : '#0b1c30';
+                langSpan.innerText = result.language || 'unknown';
+
+                if (spamProb > 0.65) {
+                    resultLabelSpan.innerText = 'Spam';
+                    resultLabelSpan.className = 'text-error font-bold';
+                } else if (spamProb > 0.3) {
+                    resultLabelSpan.innerText = 'Suspicious';
+                    resultLabelSpan.className = 'text-amber-600 font-bold';
+                } else {
+                    resultLabelSpan.innerText = 'Safe';
+                    resultLabelSpan.className = 'text-[#16a34a] font-bold';
+                }
+            } catch (error) {
+                console.error('Analysis failed:', error);
+                alert(`Error analyzing text: ${error.message}. Please try again.`);
+                // Reset UI to safe state on error
+                resultLabelSpan.innerText = 'Error';
+                resultLabelSpan.className = 'text-error font-bold';
+                spamProbSpan.innerText = '?';
+                phishingSpan.innerText = '?';
+                profanitySpan.innerText = '?';
+                langSpan.innerText = '?';
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<span class="material-symbols-outlined text-sm">play_arrow</span> Analyze Content';
+            }
         }
         if (analyzeBtn) analyzeBtn.addEventListener('click', runAnalysis);
 
