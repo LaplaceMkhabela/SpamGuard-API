@@ -5,6 +5,7 @@ import joblib
 from flask import Flask, request, jsonify,render_template
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Load model and vectorizer
 model = joblib.load('spam_model.pkl')
@@ -12,12 +13,16 @@ vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
 app = Flask(__name__)
 
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 # --- Limiter Setup ---
+redis_uri = os.environ.get("REDIS_URI", "memory://")
+
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
     default_limits=["200 per day", "50 per hour"],
-    storage_uri="redis://redis_db:6379",
+    storage_uri=redis_uri, 
     strategy="fixed-window" 
 )
 
