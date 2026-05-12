@@ -478,7 +478,7 @@
                     <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-wider">cURL Example</h3>
                     <div
                         class="bg-[#1e293b] p-4 rounded-lg font-mono text-xs mb-8 border border-slate-700 overflow-x-auto">
-                        <pre><code><span class="text-pink-400">curl</span> -X POST https://api.spamguard.dev/predict \
+                        <pre><code><span class="text-pink-400">curl</span> -X POST https://spamguard-api-626426916308.us-central1.run.app/predict \
   -H <span class="text-green-300">"Content-Type: application/json"</span> \
   -d <span class="text-blue-300">'{
     "message": "URGENT: Verify your account at bit.ly/fake-link"
@@ -528,7 +528,7 @@
                 <div
                     class="bg-surface-container rounded-lg p-3 flex items-center justify-between gap-3 border border-outline-variant">
                     <code
-                        class="font-mono text-sm text-on-background break-all">https://api.spamguard.dev/predict</code>
+                        class="font-mono text-sm text-on-background break-all">https://spamguard-api-626426916308.us-central1.run.app/predict</code>
                     <button id="copyUrlBtn"
                         class="bg-secondary/10 hover:bg-secondary/20 text-secondary rounded-md px-3 py-1.5 text-sm font-medium flex items-center gap-1 transition"><span
                             class="material-symbols-outlined text-base">content_copy</span> Copy</button>
@@ -539,7 +539,7 @@
                 <div class="bg-primary-container/10 rounded-lg p-3 mt-2">
                     <p class="text-xs font-medium text-on-background flex items-center gap-1"><span
                             class="material-symbols-outlined text-sm">code</span> Quick cURL example:</p>
-                    <pre class="text-xs font-mono bg-surface-container-highest p-2 rounded mt-1 overflow-x-auto">curl -X POST https://api.spamguard.dev/predict \
+                    <pre class="text-xs font-mono bg-surface-container-highest p-2 rounded mt-1 overflow-x-auto">curl -X POST https://spamguard-api-626426916308.us-central1.run.app/predict \
   -H "Content-Type: application/json" \
   -d '{"message": "Your text here"}'</pre>
                 </div>
@@ -682,7 +682,7 @@
         const copyBtn = document.getElementById('copyUrlBtn');
         if (copyBtn) {
             copyBtn.addEventListener('click', async () => {
-                const url = 'https://api.spamguard.dev/predict';
+                const url = 'https://spamguard-api-626426916308.us-central1.run.app/predict';
                 try {
                     await navigator.clipboard.writeText(url);
                     const originalText = copyBtn.innerHTML;
